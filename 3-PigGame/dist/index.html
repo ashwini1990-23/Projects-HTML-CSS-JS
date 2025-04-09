@@ -1,0 +1,44 @@
+<!doctype html>
+<html class="text-[62.5%] box-border">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./style.css" rel="stylesheet">
+    <title>Pig Game</title>
+</head>
+
+<body
+    class="font-['Nunito',_sans-serif] font-normal h-screen text-[#333] bg-[linear-gradient(to_top_left,_#753682_0%,_#bf2e34_100%)] flex items-center justify-center">
+    <main
+        class="relative w-[100rem] h-[60rem] bg-[rgba(255,_255,_255,_0.35)] backdrop-filter backdrop-blur-[200px] filter  [box-shadow:0_3rem_5rem_rgba(0,_0,_0,_0.25)] rounded-[9px] overflow-hidden flex">
+        <section
+            class="player player--0 player--active flex-[50%] p-36 flex flex-col items-center [transition:all_0.75s] font-bold bg-[rgba(255,_255,_255,_0.4)] font-normal opacity-100">
+            <h2 class="name relative text-[4rem] uppercase tracking-[1px] [word-spacing:2px] font-light mb-4 font-bold"
+                id="name--0 ">Player 1</h2>
+            <p class="score text-[8rem] font-light text-[#c7365f] mb-auto font-normal" id="score--0">43</p>
+            <div class="current opacity-100">
+                <p class="current-label">Current</p>
+                <p class="current-score" id="current--0">0</p>
+            </div>
+        </section>
+        <section class="player player--1 flex-[50%] p-36 flex flex-col items-center [transition:all_0.75s]">
+            <h2>Player 2</h2>
+            <h2 class="name relative text-[4rem] uppercase tracking-[1px] [word-spacing:2px] font-light mb-4"
+                id="name--1">Player 2</h2>
+            <p class="score text-[8rem] font-light text-[#c7365f] mb-auto" id="score--1">24</p>
+            <div class="current">
+                <p class="current-label">Current</p>
+                <p class="current-score" id="current--1">0</p>
+            </div>
+        </section>
+
+        <img src="dice-5.png" alt="Playing dice" class="dice" />
+        <button class="btn btn--new">🔄 New game</button>
+        <button class="btn btn--roll">🎲 Roll dice</button>
+        <button class="btn btn--hold">📥 Hold</button>
+    </main>
+    <script src="./index.js"></script>
+</body>
+
+</html>
