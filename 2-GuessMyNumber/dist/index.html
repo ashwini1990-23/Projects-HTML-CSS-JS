@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="text-[62.5%] box-border">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./style.css" rel="stylesheet">
+    <title>Guess My Number</title>
+</head>
+
+<body class="bg-black font-['Press_Start_2P',_sans-serif] text-[#eee] ">
+    <header class="font-serif relative h-[35vh] border-b-[7px_solid_#eee]">
+        <h1
+            class="text-amber-50 text-[4rem] text-center absolute w-full top-[52%] left-2/4 -translate-x-1/2 -translate-y-1/2">
+            Guess My Number!</h1>
+        <p class="between text-amber-50 text-[1.4rem] absolute top-8 right-8">(Between 1 and 20)</p>
+        <button
+            class="btn again hover:bg-[#ccc] absolute top-8 left-8 border-[none] bg-[#eee] text-[#222] text-[2rem] [font-family:inherit] px-12 py-8 cursor-pointer">Guess
+            Again!</button>
+        <div
+            class="number bg-[#eee] text-[#333] text-[6rem] w-60 px-[0rem] py-12 text-center absolute bottom-[0] left-2/4 -translate-x-1/2 translate-y-1/2">
+            ?</div>
+    </header>
+
+    <main class="h-[65vh] text-[#eee] flex items-center justify-around">
+        <section class="left w-[52rem] flex flex-col items-center">
+            <input type="number"
+                class="bg-none border-[4px] border-[solid] border-[#eee] [font-family:inherit] [color:inherit] text-[5rem] p-10 w-[25rem] text-center block mb-12">
+            <button
+                class="border-[none] bg-[#eee] text-[#222] text-[2rem] [font-family:inherit] px-12 py-8 cursor-pointer">Check!</button>
+        </section>
+        <section class="right w-[52rem] text-[2rem]">
+            <p class="message text-amber-50 mb-32 h-12">Start Guesiing....</p>
+            <p class="mb-8">💯 Score: <span>20</span></p>
+            <p>🥇 Highscore: <span>0</span></p>
+        </section>
+    </main>
+</body>
+
+</html>
