@@ -7,7 +7,6 @@ const btnCloseModal = document.querySelector('.close-modal');
 const btnsOpenModal = document.querySelectorAll('.show-modal');
 
 const openModal = () => {
-    console.log("Button clicked");
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
 };
@@ -24,3 +23,17 @@ for (let i = 0; i < btnsOpenModal.length; i++) {
 
     overlay.addEventListener('click', closeModal);
 }
+
+//Respond to keyboard event
+document.addEventListener('keydown', (e) => {
+    console.log(e)
+    // if (e.key === 'Escape') {
+    //     if (!modal.classList.contains('hidden')) {
+    //         closeModal();
+    //     }
+    // }
+
+    if (e.key === '1' && (!modal.classList.contains('hidden'))) {
+        closeModal();
+    }
+})
