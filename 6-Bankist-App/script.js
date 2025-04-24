@@ -61,6 +61,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// Displaying movements
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
   movements.forEach(function (mov, i) {
@@ -75,6 +76,31 @@ const displayMovements = function (movements) {
   });
 };
 displayMovements(account1.movements);
+
+// Calculating and Displaying Balance
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce(function (acc, mov) {
+    return acc + mov;
+  });
+  labelBalance.textContent = `${balance} EUR`;
+}
+calcDisplayBalance(account1.movements);
+
+//Computing User Names
+const createUserNames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase().split(' ').map(function (name) {
+        return name[0];
+      }).join('');
+    // console.log(acc.username);
+  })
+
+}
+createUserNames(accounts);
+
+
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -110,3 +136,23 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // correctAge(newDogsData);
 
 // ####################
+
+//  ############ Chalenge 2
+// const dogsAges = [5, 2, 4, 1, 15, 8, 3];
+// const calcAverageHumanAge = function (ages) {
+
+//   console.log(ages.map(function (dogAge) {
+//     let humanAge;
+//     if (dogAge <= 2) {
+//       return humanAge = 2 * dogAge;
+//     } else {
+//       return humanAge = 16 + dogAge * 4;
+//     }
+//   }).filter(function (age) {
+//     if (age >= 18) return age;
+//   }).reduce(function (acc, age) {
+//     return (acc + age);
+//   }, 0) / 5);
+// }
+
+// calcAverageHumanAge(dogsAges);
