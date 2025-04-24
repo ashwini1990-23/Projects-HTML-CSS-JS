@@ -88,3 +88,25 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+//  ############ Chalenge 1
+
+// const juliasData = [3, 5, 2, 12, 7];
+// const katesData = [4, 1, 15, 8, 3];
+
+// const juliasDogsData = juliasData.slice(1, 3);
+// console.log(juliasDogsData[1]);
+// const newDogsData = juliasDogsData.concat(katesData);
+// console.log(newDogsData);
+
+// const correctAge = function (dogsArr) {
+//   dogsArr.forEach(function (age, i) {
+//     if (age >= 3) {
+//       console.log(`Dog number ${i + 1} is an adult and ${age} years old`);
+//     } else {
+//       console.log(`Dog number ${i + 1} is still a puppy :-)`);
+//     }
+//   })
+// }
+// correctAge(newDogsData);
+
+// ####################
