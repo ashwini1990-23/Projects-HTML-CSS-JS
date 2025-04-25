@@ -69,22 +69,20 @@ const displayMovements = function (movements) {
     const html = `
     <div class="movements__row">
           <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-          <div class="movements__value">${mov}</div>
+          <div class="movements__value">${mov} €</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 // Calculating and Displaying Balance
 const calcDisplayBalance = function (movements) {
   const balance = movements.reduce(function (acc, mov) {
     return acc + mov;
   });
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance} €`;
 }
-calcDisplayBalance(account1.movements);
 
 //Computing User Names
 const createUserNames = function (accs) {
@@ -99,8 +97,61 @@ const createUserNames = function (accs) {
 }
 createUserNames(accounts);
 
+// Calculating Summary
+const calcDIsplaySummary = function (acc) {
+  const incomes = acc.movements.filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes} €`;
 
+  const out = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)} €`;
 
+  const interest = acc.movements.filter(mov => mov > 0)
+    .map(deposit => deposit * acc.interestRate / 100)
+    .filter((int, i, arr) => {
+      // console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest}€`
+
+}
+
+// Event Handlers
+// #### Login functionality
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  // Prevent form from submitting
+  e.preventDefault();
+  currentAccount = accounts.find((acc) => acc.username === inputLoginUsername.value);
+  console.log(currentAccount);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    console.log('LOGIN');
+    // Display UI and Welcome message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}!`
+    containerApp.style.opacity = 1;
+
+    //Clear input fields
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
+    //Display movements
+    displayMovements(currentAccount.movements);
+    //Display balance
+    calcDisplayBalance(currentAccount.movements);
+    //Display Summary
+    calcDIsplaySummary(currentAccount);
+
+  }
+});
+
+// Transfer Money functionality
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  console.log(amount)
+  const receiverAcc = inputTransferTo.value;
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -154,5 +205,32 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 //     return (acc + age);
 //   }, 0) / 5);
 // }
+//###############################
 
 // calcAverageHumanAge(dogsAges);
+
+// ################  Method Chaining
+// const euroToUsd = 1.1;
+// const deposits = account1.movements.filter(function (mov) {
+//   if (mov > 0) return mov;
+// }).map(function (mov) {
+//   return mov * euroToUsd;
+// }).reduce(function (acc, mov) {
+//   return acc + mov;
+// }, 0)
+
+// console.log(deposits);
+//###########################
+
+// ################# Challenge 3
+
+//  #######
+
+// const firstWithdrawals = account1.movements.find(mov => mov < 0)
+// console.log(account1.movements);
+// console.log(firstWithdrawals);
+
+// for (const account of accounts) {
+//   if (account.owner === 'Sarah Smith')
+//     console.log(account);
+// }
