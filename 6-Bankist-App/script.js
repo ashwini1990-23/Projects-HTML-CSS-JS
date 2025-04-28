@@ -62,9 +62,13 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // Displaying movements
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+
+  //soritng
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
@@ -77,11 +81,11 @@ const displayMovements = function (movements) {
 };
 
 // Calculating and Displaying Balance
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce(function (acc, mov) {
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce(function (acc, mov) {
     return acc + mov;
   });
-  labelBalance.textContent = `${balance} €`;
+  labelBalance.textContent = `${acc.balance} €`;
 }
 
 //Computing User Names
@@ -117,6 +121,16 @@ const calcDIsplaySummary = function (acc) {
 
 }
 
+// Update UI
+const updateUI = function (acc) {
+  //Display movements
+  displayMovements(acc.movements);
+  //Display balance
+  calcDisplayBalance(acc);
+  //Display Summary
+  calcDIsplaySummary(acc);
+}
+
 // Event Handlers
 // #### Login functionality
 let currentAccount;
@@ -124,9 +138,9 @@ btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
   e.preventDefault();
   currentAccount = accounts.find((acc) => acc.username === inputLoginUsername.value);
-  console.log(currentAccount);
+  // console.log(currentAccount);
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
-    console.log('LOGIN');
+    // console.log('LOGIN');
     // Display UI and Welcome message
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}!`
     containerApp.style.opacity = 1;
@@ -135,23 +149,74 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginUsername.value = '';
     inputLoginPin.value = '';
     inputLoginPin.blur();
-    //Display movements
-    displayMovements(currentAccount.movements);
-    //Display balance
-    calcDisplayBalance(currentAccount.movements);
-    //Display Summary
-    calcDIsplaySummary(currentAccount);
 
+    //Update the UI
+    updateUI(currentAccount);
   }
+  inputLoanAmount.value = '';
 });
 
 // Transfer Money functionality
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
   const amount = Number(inputTransferAmount.value);
-  console.log(amount)
-  const receiverAcc = inputTransferTo.value;
+  const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+  // Making input fields blur
+  inputTransferAmount.value = inputTransferTo.value = '';
+  if (amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username) {
+    console.log("Transfer Valid");
+    // Doing the Transfer
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+
+    // Update the UI
+    updateUI(currentAccount);
+  }
 });
+
+// Loan transfer
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  console.log(amount);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    console.log("Loan")
+    // Add movement
+    currentAccount.movements.push(amount);
+
+    // Update the UI
+    updateUI(currentAccount);
+  }
+})
+
+// Close an account
+const closeAccount = btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)) {
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+    console.log(index);
+    // Delete the account
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 0;
+  }
+  // Make input fields blur
+  inputCloseUsername.value = inputClosePin.value = '';
+})
+
+// Sorting
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+})
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -234,3 +299,74 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 //   if (account.owner === 'Sarah Smith')
 //     console.log(account);
 // }
+
+// ############# Chalenge 4 
+// const breeds = [
+//   {
+//     breed: 'German Shepherd',
+//     averageWeight: 32,
+//     activities: ['fetch', 'swimming'],
+//   },
+//   {
+//     breed: 'Dalmatian',
+//     averageWeight: 24,
+//     activities: ['running', 'fetch', 'agility'],
+//   },
+//   {
+//     breed: 'Labrador',
+//     averageWeight: 28,
+//     activities: ['swimming', 'fetch'],
+//   },
+//   {
+//     breed: 'Beagle',
+//     averageWeight: 12,
+//     activities: ['digging', 'fetch'],
+//   },
+//   {
+//     breed: 'Husky',
+//     averageWeight: 26,
+//     activities: ['running', 'agility', 'swimming'],
+//   },
+//   {
+//     breed: 'Bulldog',
+//     averageWeight: 36,
+//     activities: ['sleeping'],
+//   },
+//   {
+//     breed: 'Poodle',
+//     averageWeight: 18,
+//     activities: ['agility', 'fetch'],
+//   },
+// ];
+
+// // 1
+// const huskyWeight = breeds.find(breed => breed.breed === 'Husky').averageWeight;
+// console.log(huskyWeight);
+
+// // 2
+// const dogBothActivities = breeds.find(breed => breed.activities.includes('running') && breed.activities.includes('fetch')).breed;
+// console.log(dogBothActivities)
+
+// // 3
+// //const allActivities = breeds.map(breed => breed.activities).flat();
+// const allActivities = breeds.flatMap(breed => breed.activities);
+// console.log(allActivities);
+
+// ########################################33
+
+//Array Sorting
+//return < 0(-1),  A,B (keep order)
+//return > 0 (1), B,A (switch order)
+//Ascending
+// movements.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (a<b) return -1;
+// });
+// console.log(movements)
+
+//Descending
+// movements.sort((a, b) => {
+//   if (a > b) return -1;
+//   if (a<b) return 1;
+// });
+// console.log(movements)
