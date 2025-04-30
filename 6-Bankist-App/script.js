@@ -5,11 +5,58 @@
 // BANKIST APP
 
 // Data
+// ******************** Data before adding Numbers, Dates, Timers and Internationalization code **********
+// const account1 = {
+//   owner: 'Jonas Schmedtmann',
+//   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+//   interestRate: 1.2, // %
+//   pin: 1111,
+// };
+
+// const account2 = {
+//   owner: 'Jessica Davis',
+//   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+//   interestRate: 1.5,
+//   pin: 2222,
+// };
+
+// const account3 = {
+//   owner: 'Steven Thomas Williams',
+//   movements: [200, -200, 340, -300, -20, 50, 400, -460],
+//   interestRate: 0.7,
+//   pin: 3333,
+// };
+
+// const account4 = {
+//   owner: 'Sarah Smith',
+//   movements: [430, 1000, 700, 50, 90],
+//   interestRate: 1,
+//   pin: 4444,
+// };
+
+// const accounts = [account1, account2, account3, account4];
+// ************************************
+
+// DIFFERENT DATA! Contains movement dates, currency and locale
+
 const account1 = {
   owner: 'Jonas Schmedtmann',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+
+  movementsDates: [
+    '2019-11-18T21:31:17.178Z',
+    '2019-12-23T07:42:02.383Z',
+    '2020-01-28T09:15:04.904Z',
+    '2020-04-01T10:17:24.185Z',
+    '2020-05-08T14:11:59.604Z',
+    '2020-05-27T17:01:17.194Z',
+    '2020-07-11T23:36:17.929Z',
+    '2020-07-12T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'pt-PT', // de-DE
 };
 
 const account2 = {
@@ -17,24 +64,24 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+
+  movementsDates: [
+    '2019-11-01T13:15:33.035Z',
+    '2019-11-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-01-25T14:18:46.235Z',
+    '2020-02-05T16:33:06.386Z',
+    '2020-04-10T14:43:26.374Z',
+    '2020-06-25T18:49:59.371Z',
+    '2020-07-26T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
-const account3 = {
-  owner: 'Steven Thomas Williams',
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
-  interestRate: 0.7,
-  pin: 3333,
-};
+const accounts = [account1, account2];
 
-const account4 = {
-  owner: 'Sarah Smith',
-  movements: [430, 1000, 700, 50, 90],
-  interestRate: 1,
-  pin: 4444,
-};
-
-const accounts = [account1, account2, account3, account4];
-
+/////////////////////////////////////////
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -62,18 +109,26 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // Displaying movements
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
   //soritng
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements;
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(acc.movementsDates[i])
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+    const displayDate = `${day}/${month}/${year}`;
+
     const html = `
     <div class="movements__row">
           <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-          <div class="movements__value">${mov} €</div>
+          <div class="movements__date">${displayDate}</div>
+          <div class="movements__value">${mov.toFixed(2)} €</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -85,7 +140,7 @@ const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce(function (acc, mov) {
     return acc + mov;
   });
-  labelBalance.textContent = `${acc.balance} €`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)} €`;
 }
 
 //Computing User Names
@@ -105,10 +160,10 @@ createUserNames(accounts);
 const calcDIsplaySummary = function (acc) {
   const incomes = acc.movements.filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes} €`;
+  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
 
   const out = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)} €`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
 
   const interest = acc.movements.filter(mov => mov > 0)
     .map(deposit => deposit * acc.interestRate / 100)
@@ -117,14 +172,14 @@ const calcDIsplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`
 
 }
 
 // Update UI
 const updateUI = function (acc) {
   //Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
   //Display balance
   calcDisplayBalance(acc);
   //Display Summary
@@ -134,16 +189,32 @@ const updateUI = function (acc) {
 // Event Handlers
 // #### Login functionality
 let currentAccount;
+
+// FAKE IT AS: ALWAYS LOGGED IN
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 1;
+
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
   e.preventDefault();
   currentAccount = accounts.find((acc) => acc.username === inputLoginUsername.value);
   // console.log(currentAccount);
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +(inputLoginPin.value)) {
     // console.log('LOGIN');
     // Display UI and Welcome message
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}!`
     containerApp.style.opacity = 1;
+
+    // Current Date and Time
+    const now1 = new Date();
+    const day = `${now1.getDate()}`.padStart(2, 0);
+    const month = `${now1.getMonth() + 1}`.padStart(2, 0);
+    const year = now1.getFullYear();
+    const hour = `${now1.getHours()}`.padStart(2, 0);
+    const min = `${now1.getMinutes()}`.padStart(2, 0);
+    console.log(day, month, year)
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
 
     //Clear input fields
     inputLoginUsername.value = '';
@@ -159,7 +230,7 @@ btnLogin.addEventListener('click', function (e) {
 // Transfer Money functionality
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
+  const amount = +(inputTransferAmount.value);
   const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
   // Making input fields blur
   inputTransferAmount.value = inputTransferTo.value = '';
@@ -172,6 +243,10 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    // Add transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     // Update the UI
     updateUI(currentAccount);
   }
@@ -180,12 +255,15 @@ btnTransfer.addEventListener('click', function (e) {
 // Loan transfer
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
   console.log(amount);
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     console.log("Loan")
     // Add movement
     currentAccount.movements.push(amount);
+
+    // Add Loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update the UI
     updateUI(currentAccount);
@@ -197,7 +275,7 @@ const closeAccount = btnClose.addEventListener('click', function (e) {
   e.preventDefault();
 
   if (currentAccount.username === inputCloseUsername.value &&
-    currentAccount.pin === Number(inputClosePin.value)) {
+    currentAccount.pin === +(inputClosePin.value)) {
     const index = accounts.findIndex(acc => acc.username === currentAccount.username);
     console.log(index);
     // Delete the account
@@ -214,7 +292,7 @@ const closeAccount = btnClose.addEventListener('click', function (e) {
 let sorted = false;
 btnSort.addEventListener('click', function (e) {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 })
 /////////////////////////////////////////////////
@@ -228,7 +306,81 @@ const currencies = new Map([
 ]);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// Numbers
+// console.log(22 === 22.0);
+// console.log(0.1 + 0.2);
+// console.log(0.1 + 0.2 === 0.3)
 
+// // Converting string to number
+// console.log(Number('22')); // OR
+// console.log(+'22');
+// // Parsing
+// console.log(Number.parseInt('30', 10));
+
+// // Math and Rounding
+// console.log(Math.sqrt(25));
+// console.log(25 ** (1 / 2));
+
+// console.log(Math.trunc(Math.random() * 6) + 1);
+// Random number generator function
+// const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+// console.log(randomInt(10, 20));
+// // ****** Rounding Integers ******
+// console.log(Math.trunc(23.3));
+
+// //rounds number to nearest integer
+// console.log(Math.round(23.3)); //23
+// console.log(Math.round(23.9)); //24
+
+// //rounds up to nearest integer
+// console.log(Math.ceil(23.3)); //24
+// console.log(Math.ceil(23.9)); //24
+
+// //rounds number down to nearest integer
+// console.log(Math.floor(23.3)); //23
+// console.log(Math.floor(23.9)); //23
+// // rounds number up to nearest integer for -ve numbers
+// console.log(Math.floor(-23.3)); //24
+// // *************88
+// // ************ Rounding floating point numbers / decimals
+// console.log((2.7).toFixed(0));
+// console.log((2.7).toFixed(3));
+// console.log((2.345).toFixed(2));
+// console.log(+(2.345).toFixed(2));
+
+// // ************* Reaminder operator: use it when you want to do something 'every Nth time'  ***********
+// const evenOdd = (num) => {
+//   if (num % 2 === 0) {
+//     return console.log('even')
+//   } else {
+//     return console.log('odd');
+//   }
+// }
+// console.log(evenOdd(3));
+// **************
+
+// *************** Date- Create date: 4 ways ************
+// 1
+// const now = new Date();
+// console.log(now);
+// // 2 : parse date from a date string
+// console.log(new Date('Apr 30 2024'));
+// // Working with dates
+// const future = new Date(2037, 10, 19, 15, 23);
+// console.log(future);
+// console.log(future.getFullYear());
+// console.log(future.getMonth());
+// console.log(future.getDate());
+// console.log(future.getDay());
+// console.log(future.getHours());
+// console.log(future.getMinutes());
+// console.log(future.getSeconds());
+// console.log(future.toISOString());
+// // Timestamp for the date (Timestamp: number of miliseconds passed since Jan 1 1970)
+// console.log(future.getTime());
+// // To get Time stamp for right now
+// console.log(Date.now());
 /////////////////////////////////////////////////
 //  ############ Chalenge 1
 
@@ -413,42 +565,68 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // console.log(converTitleCase('and here is another title with an EXAMPLE'));
 
 // ############ Challenge 5 ##################
-const dogs = [
-  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
-  { weight: 8, curFood: 200, owners: ['Matilda'] },
-  { weight: 13, curFood: 275, owners: ['Sarah', 'John', 'Leo'] },
-  { weight: 18, curFood: 244, owners: ['Joe'] },
-  { weight: 32, curFood: 340, owners: ['Michael'] },
-];
-//Task 1: 1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion (recFood) and add it to the object as a new property. Do NOT create a new array, simply loop over the array (We never did this before, so think about how you can do this without creating a new array).
-dogs.forEach(dog => (dog.recFood = Math.floor(dog.weight ** 0.75 * 28)));
-console.log(dogs)
+// const dogs = [
+//   { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+//   { weight: 8, curFood: 200, owners: ['Matilda'] },
+//   { weight: 13, curFood: 275, owners: ['Sarah', 'John', 'Leo'] },
+//   { weight: 18, curFood: 244, owners: ['Joe'] },
+//   { weight: 32, curFood: 340, owners: ['Michael'] },
+// ];
+// //Task 1: 1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion (recFood) and add it to the object as a new property. Do NOT create a new array, simply loop over the array (We never did this before, so think about how you can do this without creating a new array).
+// dogs.forEach(dog => (dog.recFood = Math.floor(dog.weight ** 0.75 * 28)));
+// console.log(dogs)
 
-// Task 2: 2. Find Sarah's dog and log to the console whether it's eating too much or too little. HINT: Some dogs have multiple users, so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
-const owner = dogs.find(dog => dog.owners.includes('Sarah'))
-console.log(`Sarah's dog eats too ${owner.curFood > owner.recFood ? 'much' : 'little'} food`);
+// // Task 2: 2. Find Sarah's dog and log to the console whether it's eating too much or too little. HINT: Some dogs have multiple users, so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
+// const owner = dogs.find(dog => dog.owners.includes('Sarah'))
+// console.log(`Sarah's dog eats too ${owner.curFood > owner.recFood ? 'much' : 'little'} food`);
 
-// Task 3: Create an array containing all owners of dogs who eat too much (ownersTooMuch) and an array with all owners of dogs who eat too little (ownersTooLittle).
-const ownersTooMuch = dogs.filter(dog => dog.curFood > dog.recFood).map(dog => dog.owners).flat();
-const ownersTooLittle = dogs.filter(dog => dog.curFood < dog.recFood).map(dog => dog.owners).flat();
-console.log(ownersTooMuch);
-console.log(ownersTooLittle);
+// // Task 3: Create an array containing all owners of dogs who eat too much (ownersTooMuch) and an array with all owners of dogs who eat too little (ownersTooLittle).
+// const ownersTooMuch = dogs.filter(dog => dog.curFood > dog.recFood).map(dog => dog.owners).flat();
+// const ownersTooLittle = dogs.filter(dog => dog.curFood < dog.recFood).map(dog => dog.owners).flat();
+// console.log(ownersTooMuch);
+// console.log(ownersTooLittle);
 
-// Task 4: Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
+// // Task 4: Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
 
-const tooMuch = ownersTooMuch.join(' and ');
-console.log(`${tooMuch}'s dogs eat too much!`);
-console.log(`${ownersTooLittle.join(' and ')}'s dogs eat too little!`);
+// const tooMuch = ownersTooMuch.join(' and ');
+// console.log(`${tooMuch}'s dogs eat too much!`);
+// console.log(`${ownersTooLittle.join(' and ')}'s dogs eat too little!`);
 
-// Task 5: Log to the console whether there is ANY dog eating EXACTLY the amount of food that is recommended (just true or false)
-const exact = dogs.some(dog => dog.curFood === dog.recFood);
-console.log(exact);
-// Task 6: Log to the console whether ALL of the dogs are eating an OKAY amount of food (just true or false)
-const eatOkay = dogs.every(dog => dog.curFood > (dog.recFood * 0.90) && dog.curFood < (dog.recFood * 1.10));
-console.log(eatOkay);
+// // Task 5: Log to the console whether there is ANY dog eating EXACTLY the amount of food that is recommended (just true or false)
+// const exact = dogs.some(dog => dog.curFood === dog.recFood);
+// console.log(exact);
+// // Task 6: Log to the console whether ALL of the dogs are eating an OKAY amount of food (just true or false)
+// const eatOkay = dogs.every(dog => dog.curFood > (dog.recFood * 0.90) && dog.curFood < (dog.recFood * 1.10));
+// console.log(eatOkay);
 
-// Task 7: Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
-const okayArray = dogs.filter(dog => dog.curFood > (dog.recFood * 0.90) && dog.curFood < (dog.recFood * 1.10))
-console.log(okayArray);
+// // Task 7: Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
+// const okayArray = dogs.filter(dog => dog.curFood > (dog.recFood * 0.90) && dog.curFood < (dog.recFood * 1.10))
+// console.log(okayArray);
 
-// Task 8:Group the dogs into the following 3 groups: 'exact', 'too-much' and 'too-little', based on whether they are eating too much, too little or the exact amount of food, based on the recommended food portion.
+// // Task 8:Group the dogs into the following 3 groups: 'exact', 'too-much' and 'too-little', based on whether they are eating too much, too little or the exact amount of food, based on the recommended food portion.
+
+// const arrayGroups = Object.groupBy(dogs, dog => {
+//   if (dog.curFood > dog.recFood)
+//     return 'too-much';
+//   else if (dog.curFood < dog.recFood) { return 'too-little'; }
+//   else return 'exact';
+// });
+// console.log(arrayGroups);
+
+// //Task 9: Group the dogs by the number of owners they have
+// const groupByNoOfOwner = Object.groupBy(dogs, (dog) => {
+//   // if (dog.owners.length === 1) {
+//   //   return 'one-owner';
+//   // } else if (dog.owners.length === 2) {
+//   //   return 'two-owners';
+//   // }
+//   // else return 'three-owners'
+//   return `${dog.owners.length}-owner`
+// })
+// console.log(groupByNoOfOwner);
+
+// // Task 10:Sort the dogs array by recommended food portion in an ascending order. Make sure to NOT mutate the original array!
+// const sortDogArray = dogs.toSorted((a, b) => a.recFood - b.recFood)
+// console.log(sortDogArray);
+// const sortDogArray1 = dogs.toSorted((a, b) => b.recFood - a.recFood)
+// console.log(sortDogArray1);
