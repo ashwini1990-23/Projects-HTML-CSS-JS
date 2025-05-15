@@ -1,12 +1,15 @@
 'use strict';
 
-///////////////////////////////////////
-// Modal window
-
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+// const section1 = document.getElementById('section--1');
+const section1 = document.querySelector('#section--1');
+///////////////////////////////////////
+// Modal window
 
 const openModal = function (e) {
   e.preventDefault();
@@ -34,9 +37,6 @@ document.addEventListener('keydown', function (e) {
 
 // Smoothly Scrolling
 // Way-1
-const btnScrollTo = document.querySelector('.btn--scroll-to');
-// const section1 = document.getElementById('section--1');
-const section1 = document.querySelector('#section--1');
 
 btnScrollTo.addEventListener('click', function (e) {
   //Co-ordinates
@@ -63,6 +63,27 @@ btnScrollTo.addEventListener('click', function (e) {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
+// Page Navigation
+/*
+// Without Event Delegation
+document.querySelectorAll('.nav__link').forEach(function (el) {
+  el.addEventListener('click', function (e) {
+    e.preventDefault();
+    const id = this.getAttribute('href');
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  })
+});
+*/
+// With Event Delegation implementation
+document.querySelector('.nav__links').addEventListener('click', function (e) {
+  console.log(e.target);
+  e.preventDefault();
+  // matching Strategy
+  if (e.target.classList.contains('nav__link')) {
+    const id = e.target.getAttribute('href');
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  }
+});
 
 /*
 ////////////////////////////////
@@ -156,3 +177,47 @@ logo.classList.remove('c', 'j');
 logo.classList.toggle('c');
 logo.classList.contains('c');
 */
+
+/*
+/////////////////////////////
+// Events and Event Handlers
+// mdn: https://developer.mozilla.org/en-US/docs/Web/Events
+const alertH1 = function (e) {
+  alert('addEventListener: Great! You are reading the heading :)');
+  h1.removeEventListener('mouseenter', alertH1);
+};
+const h1 = document.querySelector('h1');
+// Attaching event listener to an element
+// Way-1
+h1.addEventListener('mouseenter', alertH1);
+
+
+// Way-2 : using event property directly on element (This way is bit old school. Use addEventListener())
+// h1.onmouseenter = function (e) {
+//   alert('onmouseenter: Great! You are reading the heading :)');
+// };
+//Way-3 : handling events or listening to events by using HTML Attributes
+//
+*/
+
+///////////////////////////
+// ***** DOM Traversing ****
+const h1 = document.querySelector('h1');
+// Gooing downwards: selecting child
+console.log(h1.querySelectorAll('.highlight'));
+console.log(h1.childNodes);
+console.log(h1.children);
+h1.firstElementChild.style.color = 'white';
+h1.lastElementChild.style.color = 'orange';
+
+// Going upwards: selecting parents
+console.log(h1.parentNode); // Direct parent
+console.log(h1.parentElement); // Direct parent
+h1.closest('header').style.background = 'var(--gradient-secondary)';
+
+// Going side ways: selecting siblings
+console.log(h1.previousElementSibling); // Immediate prvious sibling
+console.log(h1.nextElementSibling); // Immediate next sibling
+
+console.log(h1.previousSibling);
+console.log(h1.nextSibling);
