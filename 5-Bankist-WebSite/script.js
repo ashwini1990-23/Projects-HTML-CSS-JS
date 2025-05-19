@@ -200,6 +200,7 @@ h1.addEventListener('mouseenter', alertH1);
 //
 */
 
+/*
 ///////////////////////////
 // ***** DOM Traversing ****
 const h1 = document.querySelector('h1');
@@ -221,3 +222,4 @@ console.log(h1.nextElementSibling); // Immediate next sibling
 
 console.log(h1.previousSibling);
 console.log(h1.nextSibling);
+*/
