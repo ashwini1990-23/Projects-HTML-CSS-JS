@@ -8,6 +8,13 @@ const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 // const section1 = document.getElementById('section--1');
 const section1 = document.querySelector('#section--1');
+
+const nav = document.querySelector('.nav');
+
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
 ///////////////////////////////////////
 // Modal window
 
@@ -78,13 +85,80 @@ document.querySelectorAll('.nav__link').forEach(function (el) {
 document.querySelector('.nav__links').addEventListener('click', function (e) {
   console.log(e.target);
   e.preventDefault();
-  // matching Strategy
+  // Matching Strategy
   if (e.target.classList.contains('nav__link')) {
     const id = e.target.getAttribute('href');
     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
   }
 });
 
+// Tabbed Component
+// tabs.forEach(t => t.addEventListener('click', () => console.log('TAB'))); // Intead of this use Event Delegation
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab');
+  console.log(clicked);
+
+  // Guard Clause
+  if (!clicked) return;
+
+  //Remove active classes
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
+
+  // Activate Tab
+  clicked.classList.add('operations__tab--active');
+
+  // Activate Content Area
+  document.querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active')
+})
+
+// Menu Fade animation
+const handleHover = function (e) {
+  if (e.target.classList.contains('nav__link')) {
+    const link = e.target;
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link')
+    const logo = link.closest('.nav').querySelector('img');
+    siblings.forEach(el => {
+      if (el !== link)
+        el.style.opacity = this;
+    })
+    logo.style.opacity = this;
+  }
+}
+
+// Passing an "argument" into handler using bind() method
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+// Sticky Navigation: using scroll event
+const initialCoords = section1.getBoundingClientRect();
+console.log(initialCoords);
+
+window.addEventListener('scroll', function () {
+  console.log(window.scrollY); // Current scroll position
+  if (window.scrollY > initialCoords.top)
+    nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+});
+
+// Sticky Navigation: Intersection Observer API
+const obsCallback = function (entries, observer) {
+  entries.forEach(entry => {
+    console.log(entry)
+  })
+}
+
+const obsOptions = {
+  root: null,
+  threshold: 0.1
+}
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1);
+
+///////////////////////////
 /*
 ////////////////////////////////
 // **** Selecting Elements ****
@@ -217,9 +291,14 @@ console.log(h1.parentElement); // Direct parent
 h1.closest('header').style.background = 'var(--gradient-secondary)';
 
 // Going side ways: selecting siblings
-console.log(h1.previousElementSibling); // Immediate prvious sibling
+console.log(h1.previousElementSibling); // Immediate previous sibling
 console.log(h1.nextElementSibling); // Immediate next sibling
 
 console.log(h1.previousSibling);
 console.log(h1.nextSibling);
+
+console.log(h1.parentElement.children);
+[...h1.parentElement.children].forEach(function(el){
+if(el !== h1) el.style.transform='scale(0.5)';
+})
 */
